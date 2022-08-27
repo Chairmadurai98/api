@@ -42,11 +42,11 @@ router.delete("/delete/:id", async (req, res, next) => {
             return res.status(404).json("Campus Id Not Found")
         } else {
             const build = await Building.remove({ _campusId: { $in: req.params.id } })
-            if (!build) {
+            if (build === []) {
                 return res.status(200).json("SucessFully Deleted Only Campus")
             }
             else {
-                return (res.status(200).json("Building SucessFully Deleted"))
+                return (res.status(200).json("Campus and Building SucessFully Deleted"))
             }
         }
     } catch (error) {
