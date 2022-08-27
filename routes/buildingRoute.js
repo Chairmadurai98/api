@@ -10,20 +10,21 @@ import Campus from "../schema/CampusSchema.js"
 router.post("/add/:id", async (req, res) => {
     try {
         const campus = await Campus.findById(req.params.id)
-        if (!campus) {
+        const nameExists = await Building.findOne({buildingName : req.body.buildingName})
+        if (!campus || nameExists) {
             return res.status(404).json("Campus Id not Found or Duplicate Building Name")
         }
         else {
-            const id = req.params._id
+            
             const build = new Building({
                 buildingName: req.body.buildingName,
                 _campusId: req.params.id
             })
             const savedData = await build.save()
-            const camp = await Campus.findByIdAndUpdate(req.params.id, {
+            await Campus.findByIdAndUpdate(req.params.id, {
                 $addToSet: { buildings: savedData._id }
             }, { new: true })
-            return res.status(200).json("SuccessFully Add Building")
+            return res.status(200).json("SuccessFully Building Added")
 
         }
 
@@ -51,7 +52,7 @@ router.delete("/delete/:id", async (req, res) => {
             await Campus.findByIdAndUpdate(id, {
                 $pull: { buildings: buid }
             }, { new: true })
-            return res.status(200).json("SuccessFully Deleted Campus")
+            return res.status(200).json("SuccessFully Deleted Building")
         }
 
 

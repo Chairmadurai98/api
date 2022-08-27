@@ -6,16 +6,22 @@ import Building from "../schema/BuildingSchema.js"
 
 
 router.post("/add", async (req, res) => {
-    try {
-        const campusData = new Campus({
-            name: req.body.name,
-            status: req.body.status,
-            place : req.body.place
-        })
-        const savedData = await campusData.save()
-        return res.status(200).json(savedData)
-    } catch (error) {
-        return res.status(500).json(error)
+    const nameExists = await Campus.findOne({ name: req.body.name })
+    if (nameExists) {
+        return res.status(404).json("Duplicate campus Name")
+    }
+    else {
+        try {
+            const campusData = new Campus({
+                name: req.body.name,
+                status: req.body.status,
+                place: req.body.place
+            })
+            const savedData = await campusData.save()
+            return res.status(200).json(savedData)
+        } catch (error) {
+            return res.status(500).json(error)
+        }
     }
 })
 
@@ -35,7 +41,7 @@ router.delete("/delete/:id", async (req, res, next) => {
         if (!campusData) {
             return res.status(404).json("Campus Id Not Found")
         } else {
-            const build = await Building.remove({_campusId : {$in : req.params.id}})
+            const build = await Building.remove({ _campusId: { $in: req.params.id } })
             if (!build) {
                 return res.status(200).json("SucessFully Deleted Only Campus")
             }
@@ -50,9 +56,9 @@ router.delete("/delete/:id", async (req, res, next) => {
 
 
 
-router.put("/update/:id", async (req,res)=>{
+router.put("/update/:id", async (req, res) => {
     try {
-        await Campus.findByIdAndUpdate(req.params.id , {$set : {...req.body} })
+        await Campus.findByIdAndUpdate(req.params.id, { $set: { ...req.body } })
         return res.status(200).json("Updated Sucessfully")
     } catch (error) {
         return res.status(500).json(error)
