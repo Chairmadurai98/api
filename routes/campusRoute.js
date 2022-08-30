@@ -1,4 +1,3 @@
-import e from "express"
 import express from "express"
 const router = express.Router()
 import Campus from "../schema/CampusSchema.js"
@@ -58,8 +57,11 @@ router.delete("/delete/:id", async (req, res, next) => {
 
 router.put("/update/:id", async (req, res) => {
     try {
-        await Campus.findByIdAndUpdate(req.params.id, { $set: { ...req.body } })
+        const update = await Campus.findByIdAndUpdate(req.params.id, { $set: { ...req.body } })
+       if(update){
         return res.status(200).json("Updated Sucessfully")
+       }else{
+           return res.status(404).json("Somethings Wrong")
     } catch (error) {
         return res.status(500).json(error)
     }
