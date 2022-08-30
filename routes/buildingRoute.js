@@ -71,13 +71,16 @@ router.get("/", async (req, res) => {
 
 router.put("/update/:id", async (req, res) => {
     try {
-        await Building.findByIdAndUpdate(req.params.id, { $set: { buildingName: req.body.buildingName, status: req.body.status } })
-        return res.status(200).json("Updated Sucessfully")
+        const update = await Building.findByIdAndUpdate(req.params.id, { $set: { buildingName: req.body.buildingName, status: req.body.status } })
+        if (update) {
+            return res.status(200).json("Updated Sucessfully")
+        } else {
+            return res.status(404).json("Something Wrong")
+        }
     } catch (error) {
         return res.status(500).json(error)
     }
 })
-
 
 
 
