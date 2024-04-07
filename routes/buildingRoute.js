@@ -1,12 +1,13 @@
 import express from "express"
-const router = express.Router()
 import Building from "../schema/BuildingSchema.js"
 import Campus from "../schema/CampusSchema.js"
+import { capitizileLetter } from "../utils/helper.js"
 
 
+//Variables
+const router = express.Router()
 
-
-//add Building
+//Add Building
 router.post("/add/:id", async (req, res) => {
     try {
         const campus = await Campus.findById(req.params.id)
@@ -18,7 +19,7 @@ router.post("/add/:id", async (req, res) => {
             
             const build = new Building({
                 buildingName: req.body.buildingName,
-                _campusId: req.params.id
+                campusId: req.params.id
             })
             const savedData = await build.save()
             await Campus.findByIdAndUpdate(req.params.id, {
@@ -33,9 +34,6 @@ router.post("/add/:id", async (req, res) => {
     }
 })
 
-
-
-
 //Delete Buildings
 
 router.delete("/delete/:id", async (req, res) => {
@@ -47,7 +45,7 @@ router.delete("/delete/:id", async (req, res) => {
             return res.status(404).json("Not Found")
         }
         else {
-            const id = data._campusId
+            const id = data.campusId
             const buid = data._id
             await Campus.findByIdAndUpdate(id, {
                 $pull: { buildings: buid }
@@ -62,7 +60,29 @@ router.delete("/delete/:id", async (req, res) => {
 })
 
 router.get("/", async (req, res) => {
-    const build = await Building.find()
+    const build = await Building.aggregate([{
+        $lookup : {
+            as : 'campusId',
+            from : "campus",
+            pipeline : [{
+                $project : {
+                    label : capitizileLetter('$name'),
+                    place : capitizileLetter('$place'),
+                    value : '$_id',
+                }, 
+            }]
+        },
+    },
+    {
+        $project : {
+            buildingName : 1,
+            status : 1,
+            campusId : {
+                $arrayElemAt : ['$campusId', 0]
+            }
+        }
+    }
+]).exec()
     if (build) return res.status(200).json(build)
     return res.status(400).json("Something Wrong")
 })

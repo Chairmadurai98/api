@@ -1,8 +1,7 @@
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const CampusSchema = new mongoose.Schema({
-
   name : {
     type :String,
     unique : true,
@@ -16,10 +15,7 @@ const CampusSchema = new mongoose.Schema({
     type : Boolean,
     default : true
   },
-  buildings : {
-    type : Array,
-    default : []
-  }
+  buildings : [{type : Schema.Types.ObjectId, ref : "Building"}]
 },
 {
   timestamps: true

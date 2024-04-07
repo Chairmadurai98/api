@@ -2,7 +2,6 @@
 import mongoose from "mongoose";
 
 const BuildingSchema = new mongoose.Schema({
-
   buildingName: {
     type: String,
     required: true,
@@ -13,9 +12,10 @@ const BuildingSchema = new mongoose.Schema({
     type: Boolean,
     default : true
   },
-  _campusId: {
+  campusId: {
     type: mongoose.Types.ObjectId,
     required: true,
+    ref : "Campus"
   }
 },
 {

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -17,7 +17,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         min : 8,
     },
-
+    role_id : {
+        type : Schema.Types.ObjectId,
+        ref : "Roles"
+    }
 })
 
 

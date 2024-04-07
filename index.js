@@ -1,6 +1,5 @@
 //Import
 import express from "express"
-import dotenv from "dotenv"
 import mongoose from "mongoose";
 import helmet from "helmet"
 import morgan from "morgan"
@@ -14,9 +13,7 @@ import buildingRouter from "./routes/buildingRoute.js";
 
 //Variables
 const app = express();
-dotenv.config();
-const port = process.env.PORT;
-const url = process.env.URL;
+const {PORT, MONGO_URL} = process.env;
 
 
 
@@ -38,24 +35,14 @@ app.use("/api/building", buildingRouter)
 
 
 //Database Connect
-mongoose.connect(url, (err) => {
-    if (!err) {
-        console.log("MongoDb Connected");
-    }
-    else {
-        console.log(err);
-    }
-})
+mongoose.connect(MONGO_URL)
+    .then(()=>console.log("Server Connect"))
+    .catch(err=>console.log(err))
 
 
 
 //Server
-app.listen(port, (err) => {
-    if (!err) {
-        console.log("Server Started in", port);
-    }
-    else {
-        console.log(err);
-    }
+app.listen(PORT, (err) => {
+    !err ? console.log("Server Started in", PORT) : console.log(err);
 })
 
